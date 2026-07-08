@@ -3,63 +3,148 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#dd6b20">
+  <meta name="theme-color" content="#0A0E27">
   <title>Quet QR Robot</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <main class="app-shell">
-    <section class="hero-card">
-      <div class="hero-copy">
-        <p class="eyebrow">Robot Lookup</p>
-        <h1>Quet QR de tim robot va copy sang Sheet 2</h1>
-        <p class="subcopy">
-          Mo web tren dien thoai, quet QR de lay ma robot, kiem tra trong Sheet 1 va copy dong du lieu sang Sheet 2 neu tim thay.
-        </p>
-        <div class="flow-strip" aria-label="Quy trinh xu ly">
-          <span class="flow-pill">1. Quet QR</span>
-          <span class="flow-pill">2. Tim trong Sheet 1</span>
-          <span class="flow-pill">3. Copy sang Sheet 2</span>
+  <div class="orb orb-one"></div>
+  <div class="orb orb-two"></div>
+  <div class="orb orb-three"></div>
+
+  <main class="page-shell">
+    <header class="topbar glass-panel">
+      <div class="brand-block">
+        <span class="brand-mark"></span>
+        <div>
+          <p class="brand-label">Scan Robot</p>
+          <p class="brand-subtitle">QR to Google Sheet workflow</p>
         </div>
       </div>
+      <div class="topbar-meta">
+        <span class="mini-chip">HTTPS Ready</span>
+        <span class="mini-chip">Mobile Camera</span>
+      </div>
+    </header>
 
-      <div class="scanner-panel">
+    <section class="hero-grid">
+      <article class="hero-panel glass-panel">
+        <p class="eyebrow">Robot Intake Flow</p>
+        <h1>
+          Quet QR robot
+          <span>nhanh, ro, va chinh xac.</span>
+        </h1>
+        <p class="subcopy">
+          Giao dien duoc toi uu cho dien thoai: dua camera vao khung quet, he thong se tim robot
+          trong Sheet 1 va copy sang Sheet 2 neu ton tai.
+        </p>
+
+        <div class="hero-chip-row" aria-label="Quy trinh xu ly">
+          <span class="hero-chip">1. Quet QR</span>
+          <span class="hero-chip">2. Tim trong Sheet 1</span>
+          <span class="hero-chip">3. Copy sang Sheet 2</span>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <p class="stat-label">Trang thai</p>
+            <strong>San sang quet</strong>
+          </div>
+          <div class="stat-card">
+            <p class="stat-label">Thiet bi</p>
+            <strong>Dien thoai / Tablet</strong>
+          </div>
+          <div class="stat-card">
+            <p class="stat-label">Dong bo</p>
+            <strong>Google Sheet</strong>
+          </div>
+        </div>
+      </article>
+
+      <section class="scanner-panel glass-panel">
+        <div class="panel-head">
+          <div>
+            <p class="panel-kicker">Live Scanner</p>
+            <h2>Khung camera</h2>
+          </div>
+          <span class="panel-badge">Secure Scan</span>
+        </div>
+
         <div id="reader" class="scanner-frame" aria-label="Khung quet QR"></div>
+
         <div class="scanner-actions">
           <button id="startButton" class="primary-button" type="button">Mo camera</button>
           <button id="stopButton" class="ghost-button" type="button" disabled>Dung quet</button>
         </div>
+
         <p id="scanMessage" class="helper-text">San sang de quet ma robot tu dien thoai.</p>
-      </div>
+      </section>
     </section>
 
-    <section class="form-card">
-      <div class="section-heading">
-        <div>
-          <p class="section-kicker">Ket qua quet</p>
-          <h2>Thong tin xu ly</h2>
-        </div>
-        <p class="section-note">Ban co the quet QR hoac nhap tay ma robot khi can.</p>
-      </div>
-
-      <form id="lookupForm" novalidate>
-        <div class="field-group">
-          <label for="robotId">Ma robot</label>
-          <input id="robotId" name="robotId" type="text" placeholder="QR se duoc dien vao day hoac nhap tay neu can">
+    <section class="content-grid">
+      <section class="form-panel glass-panel">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Xu ly robot</p>
+            <h2>Thong tin quet</h2>
+          </div>
+          <p class="section-note">Co the nhap tay ma robot neu ban muon kiem tra thu cong.</p>
         </div>
 
-        <div class="field-group">
-          <label for="scannedAt">Thoi gian quet</label>
-          <input id="scannedAt" name="scannedAt" type="text" readonly>
+        <form id="lookupForm" novalidate>
+          <div class="field-group">
+            <label for="robotId">Ma robot</label>
+            <input id="robotId" name="robotId" type="text" placeholder="QR se duoc dien vao day hoac nhap tay neu can">
+          </div>
+
+          <div class="field-group">
+            <label for="scannedAt">Thoi gian quet</label>
+            <input id="scannedAt" name="scannedAt" type="text" readonly>
+          </div>
+
+          <button id="submitButton" class="primary-button full-width" type="submit">Kiem tra va copy</button>
+        </form>
+
+        <div id="resultBanner" class="result-banner" role="status" aria-live="polite">Chua co thao tac nao.</div>
+      </section>
+
+      <aside class="insight-panel glass-panel">
+        <div class="panel-head compact">
+          <div>
+            <p class="panel-kicker">Huong dan nhanh</p>
+            <h2>Su dung tren dien thoai</h2>
+          </div>
         </div>
 
-        <button id="submitButton" class="primary-button full-width" type="submit">Kiem tra va copy</button>
-      </form>
+        <div class="tip-list">
+          <div class="tip-card">
+            <span class="tip-index">01</span>
+            <div>
+              <h3>Dat QR vao trung tam khung</h3>
+              <p>Giu dien thoai on dinh trong 1-2 giay de he thong doc ma nhanh hon.</p>
+            </div>
+          </div>
 
-      <div id="resultBanner" class="result-banner" role="status" aria-live="polite">Chua co thao tac nao.</div>
+          <div class="tip-card">
+            <span class="tip-index">02</span>
+            <div>
+              <h3>Cho phep camera khi duoc hoi</h3>
+              <p>Neu Safari da tu choi quyen, vao cai dat trang web va cap lai camera.</p>
+            </div>
+          </div>
+
+          <div class="tip-card">
+            <span class="tip-index">03</span>
+            <div>
+              <h3>Nhan ket qua ngay sau khi quet</h3>
+              <p>Khi tim thay robot, du lieu se duoc copy vao dong trong dau tien cua Sheet 2.</p>
+            </div>
+          </div>
+        </div>
+      </aside>
     </section>
   </main>
 
