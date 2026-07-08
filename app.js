@@ -25,6 +25,27 @@ function getApiEndpoint() {
   return PROXY_ENDPOINT;
 }
 
+function beautifyMessage(message) {
+  const text = String(message || "").trim();
+  if (!text) {
+    return "";
+  }
+
+  return text
+    .replace("Khong tim thay robot_id", "Không tìm thấy robot_id")
+    .replace("trong Sheet 1.", "trong Sheet 1.")
+    .replace("Da tim thay", "Đã tìm thấy")
+    .replace("va copy vao Sheet 2 tai dong", "và copy vào Sheet 2 tại dòng")
+    .replace("Khong gui duoc du lieu.", "Không gửi được dữ liệu.")
+    .replace("Co loi xay ra khi kiem tra.", "Có lỗi xảy ra khi kiểm tra.")
+    .replace("Loi he thong", "Lỗi hệ thống")
+    .replace("Thieu robot_id.", "Thiếu robot_id.")
+    .replace("Khong doc duoc phan hoi tu Apps Script.", "Không đọc được phản hồi từ Apps Script.")
+    .replace("Khong doc duoc robot_id tu QR.", "Không đọc được robot_id từ QR.")
+    .replace("He thong tra ve loi.", "Hệ thống trả về lỗi.")
+    .replace("Method not allowed.", "Phương thức không được hỗ trợ.");
+}
+
 function getTimestamp() {
   const formatter = new Intl.DateTimeFormat("sv-SE", {
     year: "numeric",
@@ -41,7 +62,7 @@ function getTimestamp() {
 }
 
 function setBanner(message, type = "") {
-  resultBanner.textContent = message;
+  resultBanner.textContent = beautifyMessage(message);
   resultBanner.className = `result-banner ${type}`.trim();
 }
 
@@ -62,14 +83,14 @@ async function onScanSuccess(decodedText) {
   lastScannedCode = robotId;
   robotIdInput.value = robotId;
   refreshScannedAt();
-  scanMessage.textContent = `Da quet: ${robotId}`;
-  setBanner("Da quet thanh cong. Dang kiem tra trong Sheet 1...", "success");
+  scanMessage.textContent = `Đã quét: ${robotId}`;
+  setBanner("Đã quét thành công. Đang kiểm tra trong Sheet 1...", "success");
 
   if (scannerRunning) {
     try {
       await stopScanner();
     } catch (error) {
-      setBanner(error.message || "Khong dung duoc camera sau khi quet.", "error");
+      setBanner(error.message || "Không dừng được camera sau khi quét.", "error");
     }
   }
 
@@ -87,12 +108,12 @@ async function startScanner() {
 
   lastScannedCode = "";
   setBanner("");
-  scanMessage.textContent = "Dang mo camera...";
+  scanMessage.textContent = "Đang mở camera...";
 
   try {
     const cameras = await Html5Qrcode.getCameras();
     if (!cameras.length) {
-      throw new Error("Khong tim thay camera tren thiet bi.");
+      throw new Error("Không tìm thấy camera trên thiết bị.");
     }
 
     await scanner.start(
@@ -108,10 +129,10 @@ async function startScanner() {
     scannerRunning = true;
     startButton.disabled = true;
     stopButton.disabled = false;
-    scanMessage.textContent = "Camera da san sang. Dua QR vao khung quet.";
+    scanMessage.textContent = "Camera đã sẵn sàng. Đưa QR vào khung quét.";
   } catch (error) {
-    scanMessage.textContent = "Khong mo duoc camera.";
-    setBanner(error.message || "Camera bi tu choi hoac thiet bi khong ho tro.", "error");
+    scanMessage.textContent = "Không mở được camera.";
+    setBanner(error.message || "Camera bị từ chối hoặc thiết bị không hỗ trợ.", "error");
   }
 }
 
@@ -125,7 +146,7 @@ async function stopScanner() {
   scannerRunning = false;
   startButton.disabled = false;
   stopButton.disabled = true;
-  scanMessage.textContent = "Da dung quet camera.";
+  scanMessage.textContent = "Đã dừng quét camera.";
 }
 
 async function submitLookup(event) {
@@ -138,13 +159,13 @@ async function submitLookup(event) {
   refreshScannedAt();
 
   if (!robotId) {
-    setBanner("Ban can quet QR hoac nhap ma robot truoc khi kiem tra.", "error");
+    setBanner("Bạn cần quét QR hoặc nhập mã robot trước khi kiểm tra.", "error");
     return;
   }
 
   requestInFlight = true;
   submitButton.disabled = true;
-  setBanner("Dang kiem tra robot trong Sheet 1 va copy sang Sheet 2...");
+  setBanner("Đang kiểm tra robot trong Sheet 1 và copy sang Sheet 2...");
 
   try {
     const response = await fetch(getApiEndpoint(), {
@@ -159,18 +180,18 @@ async function submitLookup(event) {
     });
 
     if (!response.ok) {
-      throw new Error(`Khong gui duoc du lieu. HTTP ${response.status}`);
+      throw new Error(`Không gửi được dữ liệu. HTTP ${response.status}`);
     }
 
     const data = await response.json();
     if (!data.success) {
-      throw new Error(data.message || "He thong tra ve loi.");
+      throw new Error(data.message || "Hệ thống trả về lỗi.");
     }
 
     refreshScannedAt();
-    setBanner(data.message || "Kiem tra va copy thanh cong.", "success");
+    setBanner(data.message || "Kiểm tra và copy thành công.", "success");
   } catch (error) {
-    setBanner(error.message || "Co loi xay ra khi kiem tra.", "error");
+    setBanner(error.message || "Có lỗi xảy ra khi kiểm tra.", "error");
   } finally {
     requestInFlight = false;
     submitButton.disabled = false;
@@ -180,7 +201,7 @@ async function submitLookup(event) {
 startButton.addEventListener("click", startScanner);
 stopButton.addEventListener("click", () => {
   stopScanner().catch((error) => {
-    setBanner(error.message || "Khong dung duoc camera.", "error");
+    setBanner(error.message || "Không dừng được camera.", "error");
   });
 });
 form.addEventListener("submit", submitLookup);
