@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#dd6b20">
+  <title>Quet QR Robot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main class="app-shell">
+    <section class="hero-card">
+      <div class="hero-copy">
+        <p class="eyebrow">Robot Lookup</p>
+        <h1>Quet QR de tim robot va copy sang Sheet 2</h1>
+        <p class="subcopy">
+          Mo web tren dien thoai, quet QR de lay ma robot, kiem tra trong Sheet 1 va copy dong du lieu sang Sheet 2 neu tim thay.
+        </p>
+        <div class="flow-strip" aria-label="Quy trinh xu ly">
+          <span class="flow-pill">1. Quet QR</span>
+          <span class="flow-pill">2. Tim trong Sheet 1</span>
+          <span class="flow-pill">3. Copy sang Sheet 2</span>
+        </div>
+      </div>
+
+      <div class="scanner-panel">
+        <div id="reader" class="scanner-frame" aria-label="Khung quet QR"></div>
+        <div class="scanner-actions">
+          <button id="startButton" class="primary-button" type="button">Mo camera</button>
+          <button id="stopButton" class="ghost-button" type="button" disabled>Dung quet</button>
+        </div>
+        <p id="scanMessage" class="helper-text">San sang de quet ma robot tu dien thoai.</p>
+      </div>
+    </section>
+
+    <section class="form-card">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">Ket qua quet</p>
+          <h2>Thong tin xu ly</h2>
+        </div>
+        <p class="section-note">Ban co the quet QR hoac nhap tay ma robot khi can.</p>
+      </div>
+
+      <form id="lookupForm" novalidate>
+        <div class="field-group">
+          <label for="robotId">Ma robot</label>
+          <input id="robotId" name="robotId" type="text" placeholder="QR se duoc dien vao day hoac nhap tay neu can">
+        </div>
+
+        <div class="field-group">
+          <label for="scannedAt">Thoi gian quet</label>
+          <input id="scannedAt" name="scannedAt" type="text" readonly>
+        </div>
+
+        <button id="submitButton" class="primary-button full-width" type="submit">Kiem tra va copy</button>
+      </form>
+
+      <div id="resultBanner" class="result-banner" role="status" aria-live="polite">Chua co thao tac nao.</div>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
