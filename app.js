@@ -31,6 +31,10 @@ function beautifyMessage(message) {
     return "";
   }
 
+  if (text.includes("<!DOCTYPE html") || text.includes("<html")) {
+    return "Apps Script đang trả về trang lỗi quyền truy cập. Hãy chạy hàm authorizeProjectAccess trong Apps Script rồi triển khai lại Web App.";
+  }
+
   return text
     .replace("Khong tim thay robot_id", "Không tìm thấy robot_id")
     .replace("Da tim thay", "Đã tìm thấy")
@@ -46,6 +50,14 @@ function beautifyMessage(message) {
     .replace(
       "Apps Script hien tai chua co doPost. Ban can cap nhat lai Code.gs va deploy phien ban moi.",
       "Apps Script hiện tại chưa có doPost. Bạn cần cập nhật lại Code.gs và deploy phiên bản mới."
+    )
+    .replace(
+      "Apps Script dang bi thieu quyen ghi vao Sheet 2 hoac phien ban Web App chua duoc cap quyen moi. Vao Apps Script, chay ham authorizeProjectAccess, chap nhan cap quyen, sau do Deploy lai Web App.",
+      "Apps Script đang thiếu quyền ghi vào Sheet 2 hoặc bản Web App chưa được cấp quyền mới. Vào Apps Script, chạy hàm authorizeProjectAccess, chấp nhận cấp quyền, sau đó triển khai lại Web App."
+    )
+    .replace(
+      "Apps Script tra ve trang loi HTML thay vi JSON. Hay kiem tra lai quyen truy cap, chay ham authorizeProjectAccess va Deploy lai Web App.",
+      "Apps Script trả về trang lỗi HTML thay vì JSON. Hãy kiểm tra lại quyền truy cập, chạy hàm authorizeProjectAccess và triển khai lại Web App."
     );
 }
 

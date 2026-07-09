@@ -11,6 +11,31 @@ function jsonResponse(statusCode, payload) {
   };
 }
 
+function mapAppsScriptError(rawText) {
+  const text = String(rawText || "").trim();
+  if (!text) {
+    return "Khong doc duoc phan hoi tu Apps Script.";
+  }
+
+  if (text.includes("Script function not found: doPost")) {
+    return "Apps Script hien tai chua co doPost. Ban can cap nhat lai Code.gs va deploy phien ban moi.";
+  }
+
+  if (
+    text.includes("You do not have permission to access the requested document.") ||
+    text.includes("Ban khong co quyen truy cap vao tai lieu yeu cau.") ||
+    text.includes("Bạn không có quyền truy cập vào tài liệu yêu cầu.")
+  ) {
+    return "Apps Script dang bi thieu quyen ghi vao Sheet 2 hoac phien ban Web App chua duoc cap quyen moi. Vao Apps Script, chay ham authorizeProjectAccess, chap nhan cap quyen, sau do Deploy lai Web App.";
+  }
+
+  if (text.includes("<!DOCTYPE html") || text.includes("<html")) {
+    return "Apps Script tra ve trang loi HTML thay vi JSON. Hay kiem tra lai quyen truy cap, chay ham authorizeProjectAccess va Deploy lai Web App.";
+  }
+
+  return text;
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
     return {
@@ -56,12 +81,9 @@ exports.handler = async (event) => {
     try {
       data = JSON.parse(rawText);
     } catch {
-      const hasMissingDoPostError = rawText.includes("Script function not found: doPost");
       data = {
         success: false,
-        message: hasMissingDoPostError
-          ? "Apps Script hien tai chua co doPost. Ban can cap nhat lai Code.gs va deploy phien ban moi."
-          : rawText || "Khong doc duoc phan hoi tu Apps Script.",
+        message: mapAppsScriptError(rawText),
       };
     }
 
