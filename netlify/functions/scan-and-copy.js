@@ -1,4 +1,4 @@
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9eVP1Q6roaT9tfraIJI8OXnpUHsPjBP76bF2z1HupNzmZjH_dmqk7K_Fwl6ZA3IIFhA/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvSg46blfyEJj1NDm7eqBpASJquzGF3orq7Avw2L6ZzxzCFg8P9nf95KMb8gyF2BLLbQ/exec";
 
 function jsonResponse(statusCode, payload) {
   return {
