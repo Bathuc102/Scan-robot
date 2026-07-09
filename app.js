@@ -33,7 +33,6 @@ function beautifyMessage(message) {
 
   return text
     .replace("Khong tim thay robot_id", "Không tìm thấy robot_id")
-    .replace("trong Sheet 1.", "trong Sheet 1.")
     .replace("Da tim thay", "Đã tìm thấy")
     .replace("va copy vao Sheet 2 tai dong", "và copy vào Sheet 2 tại dòng")
     .replace("Khong gui duoc du lieu.", "Không gửi được dữ liệu.")
@@ -43,7 +42,11 @@ function beautifyMessage(message) {
     .replace("Khong doc duoc phan hoi tu Apps Script.", "Không đọc được phản hồi từ Apps Script.")
     .replace("Khong doc duoc robot_id tu QR.", "Không đọc được robot_id từ QR.")
     .replace("He thong tra ve loi.", "Hệ thống trả về lỗi.")
-    .replace("Method not allowed.", "Phương thức không được hỗ trợ.");
+    .replace("Method not allowed.", "Phương thức không được hỗ trợ.")
+    .replace(
+      "Apps Script hien tai chua co doPost. Ban can cap nhat lai Code.gs va deploy phien ban moi.",
+      "Apps Script hiện tại chưa có doPost. Bạn cần cập nhật lại Code.gs và deploy phiên bản mới."
+    );
 }
 
 function getTimestamp() {
