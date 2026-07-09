@@ -1,4 +1,4 @@
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvSg46blfyEJj1NDm7eqBpASJquzGF3orq7Avw2L6ZzxzCFg8P9nf95KMb8gyF2BLLbQ/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweXZ_0tP61Ote6jwNwEz3dNWPN4IzUslu7-SLKaQdz9EgrrNCQCC-eOY5UP5-y3vdARw/exec";
 
 function jsonResponse(statusCode, payload) {
   return {
@@ -26,11 +26,11 @@ function mapAppsScriptError(rawText) {
     text.includes("Ban khong co quyen truy cap vao tai lieu yeu cau.") ||
     text.includes("Bạn không có quyền truy cập vào tài liệu yêu cầu.")
   ) {
-    return "Apps Script dang bi thieu quyen ghi vao Sheet 2 hoac phien ban Web App chua duoc cap quyen moi. Vao Apps Script, chay ham authorizeProjectAccess, chap nhan cap quyen, sau do Deploy lai Web App.";
+    return "Apps Script da mo cong khai, nhung tai khoan dang thuc thi chua co quyen ghi vao Sheet 2 hoac tab dich dang bi bao ve. Hay cap quyen Editor cho tai khoan chu tri Apps Script tren file Sheet 2 va bo bao ve neu co.";
   }
 
   if (text.includes("<!DOCTYPE html") || text.includes("<html")) {
-    return "Apps Script tra ve trang loi HTML thay vi JSON. Hay kiem tra lai quyen truy cap, chay ham authorizeProjectAccess va Deploy lai Web App.";
+    return "Apps Script tra ve trang loi HTML thay vi JSON. Hay kiem tra lai quyen truy cap tren file dich va tab dich.";
   }
 
   return text;

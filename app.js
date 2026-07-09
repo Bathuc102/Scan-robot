@@ -1,4 +1,4 @@
-const FALLBACK_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvSg46blfyEJj1NDm7eqBpASJquzGF3orq7Avw2L6ZzxzCFg8P9nf95KMb8gyF2BLLbQ/exec";
+const FALLBACK_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweXZ_0tP61Ote6jwNwEz3dNWPN4IzUslu7-SLKaQdz9EgrrNCQCC-eOY5UP5-y3vdARw/exec";
 const PROXY_ENDPOINT = "/.netlify/functions/scan-and-copy";
 
 const form = document.getElementById("lookupForm");
