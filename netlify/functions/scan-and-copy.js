@@ -56,9 +56,12 @@ exports.handler = async (event) => {
     try {
       data = JSON.parse(rawText);
     } catch {
+      const hasMissingDoPostError = rawText.includes("Script function not found: doPost");
       data = {
         success: false,
-        message: rawText || "Khong doc duoc phan hoi tu Apps Script.",
+        message: hasMissingDoPostError
+          ? "Apps Script hien tai chua co doPost. Ban can cap nhat lai Code.gs va deploy phien ban moi."
+          : rawText || "Khong doc duoc phan hoi tu Apps Script.",
       };
     }
 
