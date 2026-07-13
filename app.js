@@ -13,9 +13,12 @@ const resultBanner = document.getElementById("resultBanner");
 
 const scannerRegionId = "reader";
 const scanner = new Html5Qrcode(scannerRegionId);
+const CAMERA_STORAGE_KEY = "scan_robot_preferred_camera_id";
 let scannerRunning = false;
 let lastScannedCode = "";
 let requestInFlight = false;
+let availableCameras = [];
+let activeCameraId = "";
 
 function getApiEndpoint() {
   const host = window.location.hostname;
@@ -86,6 +89,41 @@ function normalizeRobotId(value) {
   return String(value || "").trim();
 }
 
+function getStoredCameraId() {
+  try {
+    return localStorage.getItem(CAMERA_STORAGE_KEY) || "";
+  } catch {
+    return "";
+  }
+}
+
+function setStoredCameraId(cameraId) {
+  try {
+    localStorage.setItem(CAMERA_STORAGE_KEY, cameraId);
+  } catch {
+    return;
+  }
+}
+
+function pickPreferredCamera(cameras) {
+  const storedCameraId = getStoredCameraId();
+  if (storedCameraId) {
+    const storedCamera = cameras.find((camera) => camera.id === storedCameraId);
+    if (storedCamera) {
+      return storedCamera;
+    }
+  }
+
+  const rearCamera = cameras.find((camera) =>
+    /back|rear|environment|wide|ultra/gi.test(camera.label || "")
+  );
+  if (rearCamera) {
+    return rearCamera;
+  }
+
+  return cameras[cameras.length - 1] || cameras[0];
+}
+
 async function onScanSuccess(decodedText) {
   const robotId = normalizeRobotId(decodedText);
   if (!robotId || robotId === lastScannedCode || requestInFlight) {
@@ -123,16 +161,17 @@ async function startScanner() {
   scanMessage.textContent = "Dang mo camera...";
 
   try {
-    const cameras = await Html5Qrcode.getCameras();
-    if (!cameras.length) {
+    availableCameras = await Html5Qrcode.getCameras();
+    if (!availableCameras.length) {
       throw new Error("Khong tim thay camera tren thiet bi.");
     }
 
-    const backCamera =
-      cameras.find((camera) => /back|rear|environment/gi.test(camera.label || "")) || cameras[0];
+    const preferredCamera = pickPreferredCamera(availableCameras);
+    activeCameraId = preferredCamera.id;
+    setStoredCameraId(activeCameraId);
 
     await scanner.start(
-      backCamera.id,
+      activeCameraId,
       {
         fps: 10,
         qrbox: { width: 220, height: 220 },
@@ -144,7 +183,7 @@ async function startScanner() {
     scannerRunning = true;
     startButton.disabled = true;
     stopButton.disabled = false;
-    scanMessage.textContent = "Camera da san sang. Dua QR vao khung quet.";
+    scanMessage.textContent = "Camera sau da san sang. Dua QR vao khung quet.";
   } catch (error) {
     scanMessage.textContent = "Khong mo duoc camera.";
     setBanner(error.message || "Camera bi tu choi hoac thiet bi khong ho tro.", "error");
