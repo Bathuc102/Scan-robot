@@ -10,6 +10,7 @@ const stopButton = document.getElementById("stopButton");
 const submitButton = document.getElementById("submitButton");
 const scanMessage = document.getElementById("scanMessage");
 const resultBanner = document.getElementById("resultBanner");
+const readerElement = document.getElementById("reader");
 
 const scannerRegionId = "reader";
 const scanner = new Html5Qrcode(scannerRegionId);
@@ -19,6 +20,7 @@ let lastScannedCode = "";
 let requestInFlight = false;
 let availableCameras = [];
 let activeCameraId = "";
+let focusMarkerTimeoutId = 0;
 
 function getApiEndpoint() {
   const host = window.location.hostname;
@@ -157,6 +159,76 @@ async function optimizeRunningCamera() {
     }
   } catch {
     return;
+  }
+}
+
+function showFocusMarker(clientX, clientY) {
+  if (!readerElement) {
+    return;
+  }
+
+  const bounds = readerElement.getBoundingClientRect();
+  const marker = document.createElement("div");
+  marker.className = "focus-marker";
+  marker.style.left = `${clientX - bounds.left}px`;
+  marker.style.top = `${clientY - bounds.top}px`;
+
+  readerElement.appendChild(marker);
+
+  window.clearTimeout(focusMarkerTimeoutId);
+  focusMarkerTimeoutId = window.setTimeout(() => {
+    marker.remove();
+  }, 900);
+}
+
+async function refocusAtPoint(clientX, clientY) {
+  if (!scannerRunning) {
+    return;
+  }
+
+  showFocusMarker(clientX, clientY);
+
+  try {
+    const bounds = readerElement.getBoundingClientRect();
+    const settings = scanner.getRunningTrackSettings();
+    const capabilities = scanner.getRunningTrackCapabilities();
+    const xRatio = Math.min(Math.max((clientX - bounds.left) / bounds.width, 0), 1);
+    const yRatio = Math.min(Math.max((clientY - bounds.top) / bounds.height, 0), 1);
+    const sensorWidth = Number(settings.width || 1920);
+    const sensorHeight = Number(settings.height || 1080);
+    const advanced = [];
+
+    if (capabilities.focusMode) {
+      if (Array.isArray(capabilities.focusMode)) {
+        if (capabilities.focusMode.includes("single-shot")) {
+          advanced.push({ focusMode: "single-shot" });
+        } else if (capabilities.focusMode.includes("continuous")) {
+          advanced.push({ focusMode: "continuous" });
+        }
+      } else {
+        advanced.push({ focusMode: "continuous" });
+      }
+    }
+
+    if (capabilities.pointsOfInterest) {
+      advanced.push({
+        pointsOfInterest: [
+          {
+            x: Math.round(sensorWidth * xRatio),
+            y: Math.round(sensorHeight * yRatio),
+          },
+        ],
+      });
+    }
+
+    if (!advanced.length) {
+      await optimizeRunningCamera();
+      return;
+    }
+
+    await scanner.applyVideoConstraints({ advanced });
+  } catch {
+    await optimizeRunningCamera();
   }
 }
 
@@ -305,6 +377,21 @@ stopButton.addEventListener("click", () => {
     setBanner(error.message || "Khong dung duoc camera.", "error");
   });
 });
+readerElement.addEventListener("click", (event) => {
+  refocusAtPoint(event.clientX, event.clientY).catch(() => {});
+});
+readerElement.addEventListener(
+  "touchend",
+  (event) => {
+    const touch = event.changedTouches && event.changedTouches[0];
+    if (!touch) {
+      return;
+    }
+
+    refocusAtPoint(touch.clientX, touch.clientY).catch(() => {});
+  },
+  { passive: true }
+);
 form.addEventListener("submit", submitLookup);
 
 refreshScannedAt();
