@@ -124,6 +124,42 @@ function pickPreferredCamera(cameras) {
   return cameras[cameras.length - 1] || cameras[0];
 }
 
+function buildVideoConstraints(cameraId) {
+  return {
+    deviceId: cameraId ? { exact: cameraId } : undefined,
+    width: { ideal: 1920 },
+    height: { ideal: 1080 },
+    frameRate: { ideal: 24, max: 30 },
+    facingMode: "environment",
+  };
+}
+
+async function optimizeRunningCamera() {
+  try {
+    const capabilities = scanner.getRunningTrackCapabilities();
+    const constraints = {};
+
+    if (capabilities.width || capabilities.height) {
+      constraints.width = { ideal: 1920 };
+      constraints.height = { ideal: 1080 };
+    }
+
+    if (capabilities.focusMode) {
+      constraints.advanced = [{ focusMode: "continuous" }];
+    }
+
+    if (capabilities.zoom) {
+      constraints.advanced = [...(constraints.advanced || []), { zoom: 1 }];
+    }
+
+    if (Object.keys(constraints).length) {
+      await scanner.applyVideoConstraints(constraints);
+    }
+  } catch {
+    return;
+  }
+}
+
 async function onScanSuccess(decodedText) {
   const robotId = normalizeRobotId(decodedText);
   if (!robotId || robotId === lastScannedCode || requestInFlight) {
@@ -174,11 +210,15 @@ async function startScanner() {
       activeCameraId,
       {
         fps: 10,
-        qrbox: { width: 220, height: 220 },
+        aspectRatio: 1.7778,
+        qrbox: { width: 280, height: 280 },
+        videoConstraints: buildVideoConstraints(activeCameraId),
       },
       onScanSuccess,
       onScanFailure
     );
+
+    await optimizeRunningCamera();
 
     scannerRunning = true;
     startButton.disabled = true;
